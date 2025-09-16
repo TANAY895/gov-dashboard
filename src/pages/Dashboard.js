@@ -1,52 +1,192 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '../components/Layout';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import Layout from "../components/Layout";
+import {
+  Typography,
+  Box,
+  Grid,
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 export default function Dashboard() {
   const [issues, setIssues] = useState([]);
 
   useEffect(() => {
+    // Mock issues
     setIssues([
-      { _id: 1, status: 'Pending' },
-      { _id: 2, status: 'In Progress' },
-      { _id: 3, status: 'Resolved' },
-      { _id: 4, status: 'Pending' },
-      { _id: 5, status: 'In Progress' },
+      { id: 1, title: "Street light not working", status: "Pending" },
+      { id: 2, title: "Pothole on Main Street", status: "In Progress" },
+      { id: 3, title: "Water leakage near park", status: "Resolved" },
+      { id: 4, title: "Illegal dumping of waste", status: "Pending" },
+      { id: 5, title: "Broken traffic signal", status: "In Progress" },
     ]);
   }, []);
 
-  const pendingCount = issues.filter(i => i.status === 'Pending').length;
-  const inProgressCount = issues.filter(i => i.status === 'In Progress').length;
-  const resolvedCount = issues.filter(i => i.status === 'Resolved').length;
+  const statusColor = (status) => {
+    switch (status) {
+      case "Pending":
+        return "#ffb300";
+      case "In Progress":
+        return "#1976d2";
+      case "Resolved":
+        return "#4caf50";
+      default:
+        return "#ccc";
+    }
+  };
+
+  const handleStatusChange = (id, newStatus) => {
+    setIssues((prev) =>
+      prev.map((issue) => (issue.id === id ? { ...issue, status: newStatus } : issue))
+    );
+  };
+
+  const pendingCount = issues.filter((i) => i.status === "Pending").length;
+  const inProgressCount = issues.filter((i) => i.status === "In Progress").length;
+  const resolvedCount = issues.filter((i) => i.status === "Resolved").length;
 
   return (
     <Layout>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ bgcolor: '#ffb300', color: 'white', borderRadius: 2 }}>
-            <CardContent>
-              <Typography variant="h6">Pending Issues</Typography>
-              <Typography variant="h4">{pendingCount}</Typography>
-            </CardContent>
-          </Card>
+      {/* Gradient background */}
+      <Box
+  sx={{
+    p: 3,
+    mb: 8,
+    borderRadius: 3,
+    bgcolor: "#0D47A1", // deep blue background
+    color: "white",
+    position: "relative",
+    minHeight: 150,
+  }}
+>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 700, color: "white", mb: 3 }}
+        >
+          Civic Issues Dashboard
+        </Typography>
+
+        {/* Summary cards floating */}
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            position: "absolute",
+            bottom: -30,
+            left: 0,
+            right: 0,
+            px: 3,
+          }}
+        >
+          <Grid item xs={12} sm={4}>
+            <Card
+              sx={{
+                bgcolor: "#ffb300",
+                color: "white",
+                borderRadius: 3,
+                boxShadow: 6,
+                p: 2,
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, opacity: 0.9 }}>
+                Pending Issues
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {pendingCount}
+              </Typography>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Card
+              sx={{
+                bgcolor: "#1976d2",
+                color: "white",
+                borderRadius: 3,
+                boxShadow: 6,
+                p: 2,
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, opacity: 0.9 }}>
+                In Progress
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {inProgressCount}
+              </Typography>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Card
+              sx={{
+                bgcolor: "#4caf50",
+                color: "white",
+                borderRadius: 3,
+                boxShadow: 6,
+                p: 2,
+                textAlign: "center",
+              }}
+            >
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, opacity: 0.9 }}>
+                Resolved
+              </Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {resolvedCount}
+              </Typography>
+            </Card>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ bgcolor: '#1976d2', color: 'white', borderRadius: 2 }}>
-            <CardContent>
-              <Typography variant="h6">In Progress</Typography>
-              <Typography variant="h4">{inProgressCount}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card sx={{ bgcolor: '#4caf50', color: 'white', borderRadius: 2 }}>
-            <CardContent>
-              <Typography variant="h6">Resolved</Typography>
-              <Typography variant="h4">{resolvedCount}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      </Box>
+
+      {/* Issue Table */}
+      <TableContainer component={Paper} sx={{ maxHeight: "60vh" }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 700 }}>ID</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Issue Title</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Change Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {issues.map((issue) => (
+              <TableRow key={issue.id}>
+                <TableCell sx={{ fontWeight: 700 }}>{issue.id}</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>{issue.title}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={issue.status}
+                    sx={{ bgcolor: statusColor(issue.status), color: "white", fontWeight: 700 }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={issue.status}
+                    size="small"
+                    onChange={(e) => handleStatusChange(issue.id, e.target.value)}
+                  >
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="In Progress">In Progress</MenuItem>
+                    <MenuItem value="Resolved">Resolved</MenuItem>
+                  </Select>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Layout>
   );
 }
