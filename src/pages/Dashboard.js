@@ -19,6 +19,7 @@ import {
 
 export default function Dashboard() {
   const [issues, setIssues] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     // Mock issues
@@ -29,6 +30,10 @@ export default function Dashboard() {
       { id: 4, title: "Illegal dumping of waste", status: "Pending" },
       { id: 5, title: "Broken traffic signal", status: "In Progress" },
     ]);
+
+    // Update current time every second
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
   const statusColor = (status) => {
@@ -56,18 +61,39 @@ export default function Dashboard() {
 
   return (
     <Layout>
+      {/* Top bar with welcome, date/time, and contact */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+          px: 3,
+        }}
+      >
+        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+          Welcome, Admin
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#555" }}>
+          {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#555" }}>
+          Contact: support@gov.in
+        </Typography>
+      </Box>
+
       {/* Gradient background */}
       <Box
-  sx={{
-    p: 3,
-    mb: 8,
-    borderRadius: 3,
-    bgcolor: "#0D47A1", // deep blue background
-    color: "white",
-    position: "relative",
-    minHeight: 150,
-  }}
->
+        sx={{
+          p: 3,
+          mb: 8,
+          borderRadius: 3,
+          bgcolor: "#0D47A1", // deep blue background
+          color: "white",
+          position: "relative",
+          minHeight: 150,
+        }}
+      >
         <Typography
           variant="h5"
           sx={{ fontWeight: 700, color: "white", mb: 3 }}
