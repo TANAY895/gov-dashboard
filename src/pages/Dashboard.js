@@ -15,11 +15,15 @@ import {
   Chip,
   Select,
   MenuItem,
+  TextField,
+  FormControl,
 } from "@mui/material";
 
 export default function Dashboard() {
   const [issues, setIssues] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   useEffect(() => {
     // Mock issues
@@ -59,6 +63,13 @@ export default function Dashboard() {
   const inProgressCount = issues.filter((i) => i.status === "In Progress").length;
   const resolvedCount = issues.filter((i) => i.status === "Resolved").length;
 
+  // Filter issues based on search term and status filter
+  const filteredIssues = issues.filter((issue) => {
+    const matchesTitle = issue.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "All" || issue.status === statusFilter;
+    return matchesTitle && matchesStatus;
+  });
+
   return (
     <Layout>
       {/* Top bar with welcome, date/time, and contact */}
@@ -69,6 +80,11 @@ export default function Dashboard() {
           alignItems: "center",
           mb: 2,
           px: 3,
+          py: 1.5,
+          bgcolor: "#e0e0e0",
+          boxShadow: "0px 2px 4px rgba(0,0,0,0.1)",
+          borderRadius: 1,
+          flexWrap: "wrap",
         }}
       >
         <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -82,24 +98,56 @@ export default function Dashboard() {
         </Typography>
       </Box>
 
-      {/* Gradient background */}
+      {/* Gradient background with heading, search/filter and summary cards */}
       <Box
         sx={{
           p: 3,
           mb: 8,
           borderRadius: 3,
-          bgcolor: "#0D47A1", // deep blue background
+          bgcolor: "#0D47A1",
           color: "white",
           position: "relative",
           minHeight: 150,
         }}
       >
-        <Typography
-          variant="h5"
-          sx={{ fontWeight: 700, color: "white", mb: 3 }}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+          }}
         >
-          Civic Issues Dashboard
-        </Typography>
+          {/* Left: Heading */}
+          <Typography variant="h5" sx={{ fontWeight: 700, color: "white", mb: 3 }}>
+            Civic Issues Dashboard
+          </Typography>
+
+          {/* Right: Search and Filter */}
+          <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap", alignItems: "center" }}>
+            <TextField
+              label="Search Issue"
+              variant="outlined"
+              size="small"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{ bgcolor: "white", borderRadius: 1, minWidth: 200 }}
+            />
+            <FormControl size="small" sx={{ minWidth: 150, bgcolor: "white", borderRadius: 1 }}>
+              <Select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                displayEmpty
+                sx={{ px: 1 }}
+              >
+                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
+                <MenuItem value="Resolved">Resolved</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Box>
 
         {/* Summary cards floating */}
         <Grid
@@ -132,7 +180,6 @@ export default function Dashboard() {
               </Typography>
             </Card>
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <Card
               sx={{
@@ -152,7 +199,6 @@ export default function Dashboard() {
               </Typography>
             </Card>
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <Card
               sx={{
@@ -187,7 +233,7 @@ export default function Dashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {issues.map((issue) => (
+            {filteredIssues.map((issue) => (
               <TableRow key={issue.id}>
                 <TableCell sx={{ fontWeight: 700 }}>{issue.id}</TableCell>
                 <TableCell sx={{ fontWeight: 700 }}>{issue.title}</TableCell>
